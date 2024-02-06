@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { z } from 'zod'
 import { userRepository } from "../repositories/userRepository";
 import { hash } from "bcrypt";
+import { BadRequestError } from "../helpers/api-errors";
 
 export class UserController {
   async create(request: Request, response: Response) {
@@ -15,7 +16,7 @@ export class UserController {
     const userExists = await userRepository.findOneBy({ email })
 
     if (userExists) {
-      return response.sendStatus(400)
+      throw new BadRequestError('Este email já foi cadastrado.')
     }
 
     const hashPassword = await hash(password, 6)
